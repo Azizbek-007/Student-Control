@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 import { CategoryService } from './category.service';
 import { CourseRegister } from './dto/create-course';
 
+@ApiTags('Coures')
 @Controller('course')
 @UseGuards(AuthGuard()) 
 export class CategoryController {
@@ -17,9 +19,9 @@ export class CategoryController {
         await this.categoryService.Register(dto, user);
     }
 
-    @Get('/')
-    async index (@GetUser() user: User): Promise<void> {
-        await this.categoryService.index(user['id'])
+    @Get('/:id')
+    async index (@GetUser() user: User, @Param('id') course_id?: number): Promise<void> {
+        await this.categoryService.index(user['id'], course_id)
     }
 
     @Patch('/:id')

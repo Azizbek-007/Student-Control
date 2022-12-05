@@ -9,6 +9,9 @@ export class RegisterStudentDTO {
 }
 
 export class NbStudentDto {
+    @IsNumber()
+    course_id: number;
+    
     @IsEnum([1, 0])
     not_came: 1 | 0;
 

@@ -1,11 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
+import { Category } from 'src/category/entities/category';
 import { NbStudentDto, RegisterStudentDTO } from './dto/register';
 import { Student } from './entities/student';
 import { StudentService } from './student.service';
 
+@ApiTags('Student')
 @Controller('student')
 @UseGuards(AuthGuard())
 export class StudentController {
@@ -33,8 +36,8 @@ export class StudentController {
     async today (@Param('course_id') course_id: number, @GetUser() user: User) {
         await this.studentService.today_student(course_id);
     }
-    @Delete()
-    async delete () {
-
+    @Delete('/:id')
+    async delete (@Param('id') student_id: number, @GetUser() user: User) {
+        await this.studentService.delete(student_id, user);
     }
 }

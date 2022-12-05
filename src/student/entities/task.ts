@@ -7,7 +7,7 @@ export class StudentTask extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
     
-    @ManyToMany(() => Student, (student)=> student.tasks, { eager: true, persistence: true})
+    @ManyToOne(() => Student, (student)=> student.tasks, { eager: true, persistence: true})
     @JoinColumn({name: 'student_id'})
     student: Student;
     
@@ -15,6 +15,9 @@ export class StudentTask extends BaseEntity{
     @JoinColumn({name: 'course_id'})
     course: Category;
 
+    @Column()
+    course_id: number;
+    
     @Column()
     student_id: number;
 

@@ -57,14 +57,17 @@ export class StudentService {
 
     async update(student_id: number, dto: NbStudentDto, user: number) {
         const Isstudent = await this.StudentRepo.findOneBy({id: student_id, mentor_id: user});
-        if (!Isstudent) throw new NotFoundException("You have no student");
+        const IsCourse = await this.CategoryRepo.findOneBy({ id: dto.course_id, user_id: user });
+        if (!Isstudent || !IsCourse) throw new NotFoundException("You have no student");
+     
         const StudentTask = this.StudentTaskRepo.create({
+            course: IsCourse,
             not_came: dto.not_came,
-            home_work: dto.home_work,
+            home_work: dto.home_work, 
             student: Isstudent
         });
 
-        try {
+        try { 
             await StudentTask.save();
         } catch (error) {
             console.log(error)
@@ -82,25 +85,36 @@ export class StudentService {
 
     async today_student (course_id: number) {
         const date = new Date().toISOString().split('T')[0];
-        const payload = [];
         const students = await this.StudentTaskRepo.find({ 
             relations: {
-                student: true
+                student: true,
+                course:  true
             },
             where: {
                 created_at: Like(`%${date}%`)
             }
         });
         
-
         throw new HttpException({ 
             successful: true,
             code: 200,
             message: 'succesful',
             payload: students
         }, HttpStatus.OK); 
-       
     }
 
+    async delete (student_id: number, user: User): Promise<void> {
+        const student = await this.StudentRepo.findOneBy({ id: student_id, mentor_id: user['id'] });
+
+        if (!student || student == null){
+            throw new NotFoundException();
+        }
+        await this.StudentRepo.remove(student);
+        throw new HttpException({
+            successful: true,
+            code: 200,
+            message: 'course deleted',
+        }, HttpStatus.OK);
+    }
 
 }

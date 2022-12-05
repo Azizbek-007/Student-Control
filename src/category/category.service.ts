@@ -30,8 +30,10 @@ export class CategoryService {
         }, HttpStatus.CREATED);
     }
   
-    async index (user: number){
-        const mycourse = await this.CureseRep.findBy({ user_id: user });
+    async index (user: number, course_id: any){
+        var obj = []
+        course_id !=':id' ? obj.push({user_id: user, id: course_id}) : obj.push({ user_id: user })
+        const mycourse = await this.CureseRep.findBy(obj[0]);
         if ( mycourse.length === 0 ) throw new NotFoundException("you don't have courses");
         throw new HttpException({
             successful: true,
