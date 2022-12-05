@@ -13,7 +13,7 @@ export class StudentService {
     @InjectRepository(Category) private CategoryRepo: Repository<Category>
     @InjectRepository(StudentTask) private StudentTaskRepo: Repository<StudentTask>
 
-    async register (dto: RegisterStudentDTO, user: User) {
+    async register (dto: RegisterStudentDTO, user: User): Promise<void> {
         const course = await this.CategoryRepo.findOneBy({ id: dto.course_id, user_id: user['id']});
         if (course == null) {
             throw new NotFoundException("you don't have such a course");
@@ -55,7 +55,7 @@ export class StudentService {
         }, HttpStatus.OK);
     }
 
-    async update(student_id: number, dto: NbStudentDto, user: number) {
+    async update(student_id: number, dto: NbStudentDto, user: number): Promise<void> {
         const Isstudent = await this.StudentRepo.findOneBy({id: student_id, mentor_id: user});
         const IsCourse = await this.CategoryRepo.findOneBy({ id: dto.course_id, user_id: user });
         if (!Isstudent || !IsCourse) throw new NotFoundException("You have no student");
@@ -83,7 +83,7 @@ export class StudentService {
     }
 
 
-    async today_student (course_id: number) {
+    async today_student (course_id: number): Promise<void> {
         const date = new Date().toISOString().split('T')[0];
         const students = await this.StudentTaskRepo.find({ 
             relations: {
